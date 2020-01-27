@@ -1,6 +1,8 @@
 package com.oneshield.dms.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,34 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public List<Document> getDocuments() {
 		
-		return documentRepository.findAll();
+		
+		List<Document> documentList = documentRepository.findAll();
+		System.out.println("Document size-->"+documentList.size());
+
+        if(documentList.size() > 0) {
+            return documentList;
+        } else {
+            return new ArrayList<Document>();
+        }
+		
+	}
+	
+	@Override
+	public Document getDocumentbyID(Long Id) {
+		
+		
+		/*Optional<Document> document = documentRepository.findOne(Id);
+        
+        if(document.isPresent()) {
+            return document.get();
+        } else {
+            //throw new RecordNotFoundException("No employee record exist for given id");
+        	System.err.println("Exception - No record found for that Id");
+        }*/
+		System.out.println("getting document by ID "+Id);
+		
+		return documentRepository.findOne(Id);
+		
 	}
 	
 

@@ -11,4 +11,6 @@ public interface DocumentService {
 	public void saveDocument(Document documentToSave);
 	
 	public List<Document> getDocuments();
+	
+	public Document getDocumentbyID(Long Id);
 }
