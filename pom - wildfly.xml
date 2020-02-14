@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.oneshield</groupId>
-	<artifactId>OSDocumentManagement</artifactId>
+	<artifactId>dms</artifactId>
 	<version>1.0</version>
 	<name>OSDocumentManagementSystem</name>
 	<description>Oneshield DMS Spring Boot</description>
@@ -37,8 +37,20 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<scope> provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -54,7 +66,7 @@
 			<artifactId>ojdbc7</artifactId>
 			<version>12.1.0</version>
 		</dependency>
-		
+
 
 		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 		<dependency>
@@ -67,57 +79,52 @@
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
 			<artifactId>java-uuid-generator</artifactId>
-			<version>3.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
+			<version>3.1.4</version>
 		</dependency>
 
 
 	</dependencies>
-<profiles>
-    <profile>
-        <id>prod</id>
-        <activation>
-            <activeByDefault>false</activeByDefault>
-        </activation>
-        <build>
-            <resources>
-                <resource>
-                    <directory>src/main/resources</directory>
-                    <filtering>true</filtering>
-                    <excludes>
-                        <exclude>application.properties</exclude>
-                    </excludes>
-                </resource>
-            </resources>
-            <plugins>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <configuration>
-                        <executable>true</executable>
-                        <outputDirectory>D:\logs\spring\lib</outputDirectory>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
-    </profiles>
- <packaging>war</packaging>
+	<profiles>
+		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+						<excludes>
+							<exclude>application.properties</exclude>
+						</excludes>
+					</resource>
+				</resources>
+				<plugins>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<executable>true</executable>
+							<!-- <outputDirectory>D:\logs\spring\lib</outputDirectory> -->
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<packaging>war</packaging>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-			<configuration>
-                        <executable>true</executable>
-                        <outputDirectory>D:\logs\spring\lib</outputDirectory>
-                    </configuration>
-		</configuration>
+					<configuration>
+						<executable>true</executable>
+						<outputDirectory>D:\logs\spring\lib</outputDirectory>
+					</configuration>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

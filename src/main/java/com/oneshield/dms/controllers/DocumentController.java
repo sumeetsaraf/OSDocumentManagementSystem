@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oneshield.dms.DTO.AddContextDTO;
@@ -29,7 +30,7 @@ import com.oneshield.dms.service.DocumentService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/api/document-management")
+@RequestMapping("/dms/api")
 public class DocumentController {
 
     @Autowired
@@ -58,8 +59,8 @@ public class DocumentController {
 	return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/contexts/getDocumentsList/contextObject={id}")
-    public ResponseEntity<?> getContextByAssociateObjectId(@PathVariable Long id) {
+    @GetMapping("/contexts/getDocumentsList")
+    public ResponseEntity<?> getContextByAssociateObjectId(@RequestParam("contextObject") Long id) {
 	return ResponseEntity.ok().body(documentService.getContextDmsIdFromAssociateObjectId(id));
     }
 
