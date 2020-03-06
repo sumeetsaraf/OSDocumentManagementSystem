@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.oneshield.dms.common.DMSResponseActionStatus;
 
 @JsonRootName("documentSearchResult")
-public class AddContextResponseDTO extends ResponseDTO {
+public class AddContextResponseDTO {
 
     @JsonProperty("responseDocumentResult")
     private List<AddDocumentResponseDTO> responseResult;
@@ -22,15 +22,16 @@ public class AddContextResponseDTO extends ResponseDTO {
 	this.responseResult = responseResult;
     }
 
-    public DMSResponseActionStatus getStatus() {
+    public DMSResponseActionStatus getResponseStatus() {
 	return status;
     }
 
-    public void setStatus(DMSResponseActionStatus status) {
+    public void setResponseStatus(DMSResponseActionStatus status) {
 	this.status = status;
     }
 
     public AddContextResponseDTO() {
 	responseResult = new ArrayList<>();
     }
+
 }

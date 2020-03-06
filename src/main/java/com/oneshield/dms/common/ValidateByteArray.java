@@ -3,18 +3,23 @@ package com.oneshield.dms.common;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class ValidateByteArray implements ConstraintValidator<ValidateByteArrayForSize, byte[]> {
+public class ValidateByteArray implements ConstraintValidator<ValidateByteArrayForSize, byte[]>
+{
 
     @Override
-    public boolean isValid(byte[] value, ConstraintValidatorContext context) {
-	return DMSHelper.getSizeOfByteArray(value);
+    public boolean isValid(
+                           byte[] value,
+                           ConstraintValidatorContext context)
+    {
+        return DMSHelper.getSizeOfByteArray(
+                                            value);
     }
 
     @Override
-    public void initialize(ValidateByteArrayForSize constraintAnnotation)
+    public void initialize(
+                           ValidateByteArrayForSize constraintAnnotation)
     {
-        // TODO Auto-generated method stub
-        
+
     }
 
 }

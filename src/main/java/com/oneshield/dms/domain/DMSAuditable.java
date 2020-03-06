@@ -11,18 +11,16 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 @MappedSuperclass
-//@EntityListeners(AuditingEntityListener.class)
 public abstract class DMSAuditable {
 
 
     @CreatedDate
     @Temporal(TIMESTAMP)
-    protected Date createdDate;
-
+    private Date createdDate;
 
     @LastModifiedDate
     @Temporal(TIMESTAMP)
-    protected Date lastModifiedDate;
+    private Date lastModifiedDate;
    
 
     public Date getCreatedDate() {

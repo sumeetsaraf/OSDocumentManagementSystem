@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,14 +15,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.fasterxml.uuid.Generators;
+import com.oneshield.dms.common.DMSDocumentStatus;
+import com.oneshield.dms.common.DMSHelper;
 
 @Entity
-@Table(name = "DMS_DOCUMENT", schema = "BASE_ST")
-public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable {
+@Table(name = "DMS_DOCUMENT")
+public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable, Comparable<DMSDocument> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DMS_DOCUMENT_SEQ")
@@ -40,6 +43,24 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable {
     private Set<DMSDocumentHistory> historyOfDocument;
 
     private String dmsId;
+
+    @Column(unique = true)
+    private String externalDmsId;
+
+    private DMSDocumentStatus documentStatus;
+
+    @PrePersist
+    public void beforePersist() {
+	if (dmsId == null) {
+	    this.setDmsId(DMSHelper.getEscapaedTimeForCurrentTimestamp());
+	}
+	this.updateDocumentSizeBasedOnContent();
+    }
+
+    @PreUpdate
+    public void beforeUpdate() {
+	this.updateDocumentSizeBasedOnContent();
+    }
 
     public DMSDocumentContent getDocumentContent() {
 	return documentContent;
@@ -87,22 +108,46 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable {
 	this.context = context;
     }
 
-    @PrePersist
-    public void beforePersist() {
-	if (dmsId == null) {
-	    dmsId = Generators.timeBasedGenerator().generate().toString();
-	}
-    }
-
     public String getDmsId() {
 	return dmsId;
     }
 
     public Set<DMSDocumentHistory> getHistoryOfDocument() {
-	if(historyOfDocument==null) {
+	if (historyOfDocument == null) {
 	    historyOfDocument = new HashSet<>();
 	}
 	return historyOfDocument;
+    }
+
+    public DMSDocumentStatus getDocumentStatus() {
+	return documentStatus;
+    }
+
+    public void setDocumentStatus(DMSDocumentStatus documentStatus) {
+	this.documentStatus = documentStatus;
+    }
+
+    private void updateDocumentSizeBasedOnContent() {
+	if (documentContent != null && documentContent.getDocumentContent() != null) {
+	    this.setContentSize(documentContent.getDocumentContent().length / 1024L);
+	}
+    }
+
+    @Override
+    public int compareTo(DMSDocument o) {
+	return this.id.compareTo(o.getId());
+    }
+
+    public String getExternalDmsId() {
+	return externalDmsId;
+    }
+
+    public void setExternalDmsId(String externalDmsId) {
+	this.externalDmsId = externalDmsId;
+    }
+
+    public void setDmsId(String dmsId) {
+	this.dmsId = dmsId;
     }
 
 }

@@ -1,30 +1,29 @@
 package com.oneshield.dms.service;
 
-import java.util.List;
-
 import com.oneshield.dms.DTO.AddContextDTO;
 import com.oneshield.dms.DTO.AddContextResponseDTO;
 import com.oneshield.dms.DTO.DocumentContentDTO;
-import com.oneshield.dms.domain.DMSDocument;
+import com.oneshield.dms.common.DMSDocumentStatus;
 
 public interface DocumentService {
 
-    String getHello();
+    AddContextResponseDTO saveCreateContextAndDocuments(AddContextDTO contextDTO);
 
-    public DMSDocument saveDocument(DMSDocument documentToSave);
+    AddContextResponseDTO getContextDmsIdFromContextObjectId(Long contextObjectId);
 
-    public List<DMSDocument> getAllDocuments();
+    AddContextResponseDTO getContextDmsIdFromParentContextObjectId(Long parentContextObjectId);
 
-    public DMSDocument getDocumentbyID(Long Id);
+    AddContextResponseDTO getContextDmsIdFromMasterContextObjectId(Long masterContextObjectId);
 
-    public void deleteDocumentById(Long id);
-
-    void updateDocumentForId(Long id, DMSDocument documentToUpdate);
-
-    AddContextResponseDTO saveContext(AddContextDTO contextDTO);
-
-    AddContextResponseDTO getContextDmsIdFromAssociateObjectId(Long id);
+    AddContextResponseDTO getContextDmsIdFromContextObjectIdOrParentContextObjectId(Long associateId,
+	    Long associateParent);
 
     AddContextResponseDTO updateDocumentWithAssocIdAndDmsId(Long assocId, String dmsId,
 	    DocumentContentDTO documentToUpdate);
+
+    AddContextResponseDTO getDocumentByDmsId(String dmsId);
+
+    boolean updateDocumentForDmsId(String dmsId, DMSDocumentStatus documentToUpdate);
+
+    boolean deleteDocumentByDmsId(String dmsId);
 }

@@ -10,10 +10,10 @@ import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.oneshield.dms.OSDMSAuditingEntityListener;
+import com.oneshield.dms.common.ValidateByteArrayForSize;
 
 @Entity
-@Table(name = "DMS_DOCUMENT_CONTENT", schema = "BASE_ST")
+@Table(name = "DMS_DOCUMENT_CONTENT")
 @EntityListeners(OSDMSAuditingEntityListener.class)
 //@JsonRootName(value="DocumentContents")
 public class DMSDocumentContent extends DMSAuditable implements Cloneable {
@@ -26,6 +26,7 @@ public class DMSDocumentContent extends DMSAuditable implements Cloneable {
 
     @Lob
     @Column(name = "DOCUMENT_CONTENT")
+    @ValidateByteArrayForSize
     private byte[] documentContentLob;
 
     public DMSDocumentContent() {

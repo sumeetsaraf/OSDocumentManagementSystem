@@ -13,8 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "DMS_DOCUMENT_HISTORY", schema = "BASE_ST")
-
+@Table(name = "DMS_DOCUMENT_HISTORY")
 public class DMSDocumentHistory extends DMSDocumentBasicFeatures implements Comparable<DMSDocumentHistory> {
 
     @Id

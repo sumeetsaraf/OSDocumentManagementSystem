@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,8 +15,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "DMS_CONTEXT", schema = "BASE_ST")
-public class DMSContext {
+@Table(name = "DMS_CONTEXT")
+public class DMSContext implements Comparable<DMSContext> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DMS_CONTEXT_SEQ")
@@ -23,11 +24,15 @@ public class DMSContext {
     private Long id;
 
     @Column(unique = true)
-    private Long associateObjectId;
+    private Long contextObjectId;
 
-    private String associateObjectType;
+    private String contextObjectType;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")
+    private Long parentContextObjectId;
+
+    private Long masterContextObjectId;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "context", fetch = FetchType.LAZY)
     private Set<DMSDocument> setOfDocuments;
 
     public Long getId() {
@@ -49,20 +54,20 @@ public class DMSContext {
 	this.setOfDocuments = lisOfDocuments;
     }
 
-    public Long getAssociateObjectId() {
-	return associateObjectId;
+    public Long getContextObjectId() {
+	return contextObjectId;
     }
 
-    public void setAssociateObjectId(Long associateObjectId) {
-	this.associateObjectId = associateObjectId;
+    public void setContextObjectId(Long contextObjectId) {
+	this.contextObjectId = contextObjectId;
     }
 
-    public String getAssociateObjectType() {
-	return associateObjectType;
+    public String getContextObjectType() {
+	return contextObjectType;
     }
 
-    public void setAssociateObjectType(String associateObjectType) {
-	this.associateObjectType = associateObjectType;
+    public void setContextObjectType(String contextObjectType) {
+	this.contextObjectType = contextObjectType;
     }
 
     public DMSDocument createNewDocument() {
@@ -70,6 +75,27 @@ public class DMSContext {
 	document.setContext(this);
 	this.getSetOfDocuments().add(document);
 	return document;
+    }
+
+    public Long getParentContextObjectId() {
+	return parentContextObjectId;
+    }
+
+    public void setParentContextObjectId(Long parentContextObjectId) {
+	this.parentContextObjectId = parentContextObjectId;
+    }
+
+    @Override
+    public int compareTo(DMSContext o) {
+	return this.contextObjectId.compareTo(o.getContextObjectId());
+    }
+
+    public Long getMasterContextObjectId() {
+	return masterContextObjectId;
+    }
+
+    public void setMasterContextObjectId(Long masterContextObjectId) {
+	this.masterContextObjectId = masterContextObjectId;
     }
 
 }

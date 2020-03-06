@@ -4,14 +4,17 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 
-import com.oneshield.dms.OSDMSAuditingEntityListener;
-
 @MappedSuperclass
 @EntityListeners(OSDMSAuditingEntityListener.class)
 public class DMSDocumentBasicFeatures extends DMSAuditable {
 
     @Column(name = "DOCUMENT_FILE_NAME")
     private String fileName;
+    @Column(name = "CONTENT_SIZE_KB")
+    private Long contentSize;
+    private Long contentCode;
+    private String contentType;
+    private String description;
 
     public String getFileName() {
 	return fileName;
@@ -20,4 +23,37 @@ public class DMSDocumentBasicFeatures extends DMSAuditable {
     public void setFileName(String fileName) {
 	this.fileName = fileName;
     }
+
+    public Long getContentSize() {
+	return contentSize;
+    }
+
+    public void setContentSize(Long contentSize) {
+	this.contentSize = contentSize;
+    }
+
+    public Long getContentCode() {
+	return contentCode;
+    }
+
+    public void setContentCode(Long contentCode) {
+	this.contentCode = contentCode;
+    }
+
+    public String getContentType() {
+	return contentType;
+    }
+
+    public void setContentType(String contentType) {
+	this.contentType = contentType;
+    }
+
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
 }

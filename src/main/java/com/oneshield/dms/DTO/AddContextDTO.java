@@ -1,24 +1,32 @@
 package com.oneshield.dms.DTO;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+
 @JsonRootName("context")
-public class AddContextDTO implements Serializable {
+public class AddContextDTO {
 
-    private static final long serialVersionUID = 1L;
-
-    @JsonProperty("associateObjectId")
+    @JsonProperty("contextObjectId")
     @NotNull
-    private Long associateObject;
+    @Min(0)
+    @Max(9223372036854775806L)
+    private Long contextObjectId;
 
     @NotNull
-    private String associateObjectType;
+    private String contextObjectType;
+
+    @JsonProperty("parentContextObjectId")
+    private Long parentContextObjectId;
+
+    @JsonProperty("masterContextObjectId")
+    private Long masterContextObjectId;
 
     @JsonProperty("documentContent")
     @NotNull
@@ -28,20 +36,20 @@ public class AddContextDTO implements Serializable {
 
     private String os_id;
 
-    public Long getAssociateObjectId() {
-	return associateObject;
+    public Long getContextObjectId() {
+	return contextObjectId;
     }
 
-    public void setAssociateObjectId(Long associateObjectId) {
-	this.associateObject = associateObjectId;
+    public void setContextObjectId(Long contextObjectId) {
+	this.contextObjectId = contextObjectId;
     }
 
-    public String getAssociateObjectType() {
-	return associateObjectType;
+    public String getContextObjectType() {
+	return contextObjectType;
     }
 
-    public void setAssociateObjectType(String associateObjectType) {
-	this.associateObjectType = associateObjectType;
+    public void setContextObjectType(String contextObjectType) {
+	this.contextObjectType = contextObjectType;
     }
 
     public List<DocumentContentDTO> getDocumentContent() {
@@ -69,6 +77,22 @@ public class AddContextDTO implements Serializable {
 
     public void setOs_id(String os_id) {
 	this.os_id = os_id;
+    }
+
+    public Long getParentContextObjectId() {
+	return parentContextObjectId;
+    }
+
+    public void setParentContextObjectId(Long parentContextObjectId) {
+	this.parentContextObjectId = parentContextObjectId;
+    }
+
+    public Long getMasterContextObjectId() {
+	return masterContextObjectId;
+    }
+
+    public void setMasterContextObjectId(Long masterContextObjectId) {
+	this.masterContextObjectId = masterContextObjectId;
     }
 
 }
