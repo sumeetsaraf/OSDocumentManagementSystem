@@ -9,6 +9,6 @@ import com.oneshield.dms.domain.DMSDocument;
 @Repository
 public interface DocumentRepository extends JpaRepository<DMSDocument, Long> {
 
-    DMSDocument findByDmsIdAndDocumentStatusNot(String dmsId, DMSDocumentStatus documentStatus);
+    DMSDocument findByDmsIdOrExternalDmsIdAndDocumentStatusNot(String dmsId, String externalDmsId, DMSDocumentStatus documentStatus);
 
 }

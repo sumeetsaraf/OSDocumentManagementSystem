@@ -12,7 +12,7 @@ public class DMSDocumentBasicFeatures extends DMSAuditable {
     private String fileName;
     @Column(name = "CONTENT_SIZE_KB")
     private Long contentSize;
-    private Long contentCode;
+    private String contentCode;
     private String contentType;
     private String description;
 
@@ -32,11 +32,11 @@ public class DMSDocumentBasicFeatures extends DMSAuditable {
 	this.contentSize = contentSize;
     }
 
-    public Long getContentCode() {
+    public String getContentCode() {
 	return contentCode;
     }
 
-    public void setContentCode(Long contentCode) {
+    public void setContentCode(String contentCode) {
 	this.contentCode = contentCode;
     }
 

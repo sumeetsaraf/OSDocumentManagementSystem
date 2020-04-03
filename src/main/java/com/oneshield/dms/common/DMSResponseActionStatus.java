@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DMSResponseActionStatus {
 
-    CREATED("Created"), DELETED("Deleted"), EMPTY("Not Found"), NOACTION("NoAction"), FAILED("Failed"), ADDED("Added");
+    CREATED("Created"), DELETED("Deleted"), EMPTY("Not Found"), NOACTION("NoAction"), FAILED("Failed"), ADDED("Added"),SYNCHED("Synched");
 
     private String displayName;
 

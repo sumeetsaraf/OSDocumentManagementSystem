@@ -19,11 +19,13 @@ import com.oneshield.dms.DTO.DocumentContentDTO;
 import com.oneshield.dms.common.DMSDocumentStatus;
 import com.oneshield.dms.common.DMSResponseActionStatus;
 import com.oneshield.dms.common.DMSSystemParameters;
+import com.oneshield.dms.common.ModelMapperHelper;
 import com.oneshield.dms.domain.DMSContext;
 import com.oneshield.dms.domain.DMSDocument;
 import com.oneshield.dms.domain.DMSDocumentContent;
 import com.oneshield.dms.domain.DMSDocumentHistory;
 import com.oneshield.dms.domain.repository.ContextRepository;
+import com.oneshield.dms.domain.repository.DocumentContentRepository;
 import com.oneshield.dms.domain.repository.DocumentRepository;
 import com.oneshield.dms.service.DocumentService;
 
@@ -40,11 +42,16 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
     @Autowired
     DMSSystemParameters systemParameters;
 
+    @Autowired
+    DocumentContentRepository documentContentRepository;
+    
     ModelMapper modelMapper;
 
     public DocumentServiceImpl() {
 	super();
 	modelMapper = new ModelMapper();
+	ModelMapperHelper.setupDocumentSpecificModelMapper(modelMapper);
+
     }
 
     @Override
@@ -57,10 +64,18 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
 	    if (inputDTO.getParentContextObjectId() != null) {
 		contextDomain.setParentContextObjectId(inputDTO.getParentContextObjectId());
 	    }
+	    if (inputDTO.getMasterContextObjectId() != null) {
+		contextDomain.setMasterContextObjectId(inputDTO.getMasterContextObjectId());
+	    }
 	}
-	for (DocumentContentDTO documentDTO : inputDTO.getDocumentContent()) {
-	    contextDomain = this.createNewDocumentFromDtoForContext(documentDTO, contextDomain);
-	    this.updateDocumentStatusBasedOnOptimistic(contextDomain, systemParameters.isOptimisticMode());
+	this.createDocumentsInContextFromDocumentDTOList(inputDTO, responseDto, contextDomain);
+	return responseDto;
+    }
+
+    private void createDocumentsInContextFromDocumentDTOList(AddContextDTO inputDTO, AddContextResponseDTO responseDto,
+	    DMSContext contextDomain) {
+	for (DocumentContentDTO documentDTO : inputDTO.getListOfDocuments()) {
+	    contextDomain = this.createDocumentFromDTO(contextDomain, documentDTO);
 	    contextDomain = documentContextRepository.saveAndFlush(contextDomain);
 	    DMSDocument createdDocument = contextDomain.getSetOfDocuments().stream()
 		    .sorted(new Comparator<DMSDocument>() {
@@ -70,10 +85,14 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
 			}
 		    }).findFirst().get();
 	    AddDocumentResponseDTO responseIntermDto = modelMapper.map(createdDocument, AddDocumentResponseDTO.class);
-	    responseIntermDto.setDocumentContent(null);
 	    responseDto.getResponseResult().add(responseIntermDto);
 	}
-	return responseDto;
+    }
+
+    private DMSContext createDocumentFromDTO(DMSContext contextDomain, DocumentContentDTO documentDTO) {
+	contextDomain = this.createNewDocumentFromDtoForContext(documentDTO, contextDomain);
+	this.updateDocumentStatusBasedOnOptimistic(contextDomain, systemParameters.isOptimisticMode());
+	return contextDomain;
     }
 
     private void updateDocumentStatusBasedOnOptimistic(DMSContext contextDomain, boolean optimisticMode) {
@@ -82,7 +101,6 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
 		document.setDocumentStatus(optimisticMode ? DMSDocumentStatus.ADDED : DMSDocumentStatus.CREATED);
 	    }
 	}
-
     }
 
     private DMSContext createNewDocumentFromDtoForContext(DocumentContentDTO documentDTO, DMSContext existingContext) {
@@ -93,13 +111,6 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
 	    documentDomain.setDocumentContent(contentDomain);
 	}
 	return existingContext;
-    }
-
-    @Override
-    public AddContextResponseDTO getContextDmsIdFromContextObjectIdOrParentContextObjectId(Long associateId,
-	    Long associateParent) {
-	return this.createDTOFromContextDomainSet(
-		documentContextRepository.findByContextObjectIdOrParentContextObjectId(associateId, associateParent));
     }
 
     private AddContextResponseDTO createDTOFromContextDomainSet(Set<DMSContext> contextDomainSet) {
@@ -114,10 +125,9 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
 		}
 		AddDocumentResponseDTO responseIntermDto = new AddDocumentResponseDTO();
 		responseIntermDto = modelMapper.map(document, AddDocumentResponseDTO.class);
-		responseIntermDto.setDocumentContent(null);
 		dtoToReturn.getResponseResult().add(responseIntermDto);
+		dtoToReturn.setResponseStatus(DMSResponseActionStatus.NOACTION);
 	    }
-	    dtoToReturn.setResponseStatus(DMSResponseActionStatus.NOACTION);
 	}
 	return dtoToReturn;
     }
@@ -155,12 +165,18 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
     @Override
     public AddContextResponseDTO getDocumentByDmsId(String dmsId) {
 	AddContextResponseDTO responseDto = new AddContextResponseDTO();
-	DMSDocument document = documentRepository.findByDmsIdAndDocumentStatusNot(dmsId, DMSDocumentStatus.DELETED);
+	DMSDocument document = documentRepository.findByDmsIdOrExternalDmsIdAndDocumentStatusNot(dmsId, dmsId,
+		DMSDocumentStatus.DELETED);
 	AddDocumentResponseDTO responseIntermDto = new AddDocumentResponseDTO();
 	if (document == null) {
 	    responseDto.setResponseStatus(DMSResponseActionStatus.EMPTY);
 	} else {
+	    modelMapper.typeMap(DMSDocument.class, AddDocumentResponseDTO.class).addMapping(
+		    src -> src.getDocumentContent().getDocumentContent(),
+		    (dest, value) -> dest.setDocumentContent((byte[]) value));
 	    responseIntermDto = modelMapper.map(document, AddDocumentResponseDTO.class);
+	    modelMapper.typeMap(DMSDocument.class, AddDocumentResponseDTO.class)
+	    .addMappings(mapper -> mapper.skip(AddDocumentResponseDTO::setDocumentContent));
 	    responseDto.setResponseStatus(DMSResponseActionStatus.NOACTION);
 	    responseDto.getResponseResult().add(responseIntermDto);
 	}
@@ -169,7 +185,8 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
 
     @Override
     public boolean updateDocumentForDmsId(String dmsId, DMSDocumentStatus statusToUpdate) {
-	DMSDocument document = documentRepository.findByDmsIdAndDocumentStatusNot(dmsId, DMSDocumentStatus.DELETED);
+	DMSDocument document = documentRepository.findByDmsIdOrExternalDmsIdAndDocumentStatusNot(dmsId, dmsId,
+		DMSDocumentStatus.DELETED);
 	if (document != null) {
 	    document.setDocumentStatus(statusToUpdate);
 	    documentRepository.save(document);
@@ -200,6 +217,103 @@ public class DocumentServiceImpl /* extends BaseService */ implements DocumentSe
     public AddContextResponseDTO getContextDmsIdFromMasterContextObjectId(Long masterContextObjectId) {
 	return this.createDTOFromContextDomainSet(
 		documentContextRepository.findByMasterContextObjectId(masterContextObjectId));
+    }
+
+    @Override
+    public AddContextResponseDTO updateDocumentsForContextObjectId(AddContextDTO contextObjectWithListOfDocuments) {
+	DMSContext contextDomain = documentContextRepository
+		.findByContextObjectId(contextObjectWithListOfDocuments.getContextObjectId());
+	AddContextResponseDTO contextResponseDto = null;
+	if (contextDomain == null) {
+	    contextResponseDto = this.saveCreateContextAndDocuments(contextObjectWithListOfDocuments);
+	} else {
+	    contextResponseDto = this.updateContextObjectAttributesManually(contextDomain,
+		    contextObjectWithListOfDocuments);
+	}
+	contextResponseDto.setResponseStatus(DMSResponseActionStatus.SYNCHED);
+	return contextResponseDto;
+    }
+
+    private AddContextResponseDTO updateContextObjectAttributesManually(DMSContext contextObjectToUpdate,
+	    AddContextDTO toUpdateFrom) {
+	// manual cross assignment between DTO and Domain Object, as alot properties
+	// needs to be ignored
+	long dmsContextId = contextObjectToUpdate.getId();
+	Set<DMSDocument> setOfDocuments = contextObjectToUpdate.getSetOfDocuments();
+	DMSContext contextObjectToMerge = modelMapper.map(contextObjectToUpdate, DMSContext.class);
+	modelMapper.map(toUpdateFrom, contextObjectToMerge);
+	contextObjectToMerge.setId(dmsContextId);
+	DMSDocument matchedDocument = null;
+	for (DocumentContentDTO documentDTO : toUpdateFrom.getListOfDocuments()) {
+	    matchedDocument = null;
+	    // find the right document using externalDmsId, if externalDmsId == null then
+	    // check against dmsId else null
+	    matchedDocument = setOfDocuments.parallelStream()
+		    .filter(document -> document.getExternalDmsId() != null
+			    ? document.getExternalDmsId().equalsIgnoreCase(documentDTO.getExternalDmsId())
+			    : document.getDmsId().equalsIgnoreCase(documentDTO.getExternalDmsId()))
+		    .findFirst().orElse(null);
+	    if (matchedDocument != null) {
+		// if document found then update it manually
+		mapDocumentPropertieFromDTOManually(matchedDocument, documentDTO);
+		matchedDocument.setDocumentStatus(DMSDocumentStatus.SYNCHED);
+		DMSDocumentContent newContent = documentDTO.getDocumentContent() != null ? new DMSDocumentContent()
+			: null;
+		if (newContent != null) {
+		    documentContentRepository.delete(matchedDocument.getDocumentContent());
+		    newContent.setDocumentContent(documentDTO.getDocumentContent());
+		    matchedDocument.setDocumentContent(newContent);
+		}
+	    } else {
+		// else create a new document and attach.
+		contextObjectToMerge = this.createDocumentFromDTO(contextObjectToMerge, documentDTO);
+	    }
+	}
+	documentContextRepository.saveAndFlush(contextObjectToMerge);
+	return this.createDTOFromContextDomainSet(new HashSet<>(Arrays.asList(contextObjectToMerge)));
+    }
+
+    private void mapDocumentPropertieFromDTOManually(DMSDocument matchedDocument, DocumentContentDTO documentDTO) {
+	matchedDocument.setContentCode(documentDTO.getContentFeatures().getContentCode() != null
+		? documentDTO.getContentFeatures().getContentCode()
+		: matchedDocument.getContentCode());
+	matchedDocument.setContentType(documentDTO.getContentFeatures().getContentType() != null
+		? documentDTO.getContentFeatures().getContentType()
+		: matchedDocument.getContentType());
+	matchedDocument.setVersionId(
+		documentDTO.getVersionId() != null ? documentDTO.getVersionId() : matchedDocument.getVersionId());
+	matchedDocument.setAttachmentType(documentDTO.getAttachmentType() != null ? documentDTO.getAttachmentType()
+		: matchedDocument.getAttachmentType());
+	matchedDocument.setRenderingType(documentDTO.getRenderingType() != null ? documentDTO.getRenderingType()
+		: matchedDocument.getRenderingType());
+	matchedDocument
+		.setRenderingTemplate(documentDTO.getRenderingTemplate() != null ? documentDTO.getRenderingTemplate()
+			: matchedDocument.getRenderingTemplate());
+	matchedDocument.setRenderingTemplateId(
+		documentDTO.getRenderingTemplateId() != null ? documentDTO.getRenderingTemplateId()
+			: matchedDocument.getRenderingTemplateId());
+	matchedDocument.setFileName(
+		documentDTO.getFileName() != null ? documentDTO.getFileName() : matchedDocument.getFileName());
+	matchedDocument.setContentCode(
+		documentDTO.getContentFeatures() != null && documentDTO.getContentFeatures().getContentCode() != null
+			? documentDTO.getContentFeatures().getContentCode()
+			: matchedDocument.getContentCode());
+	matchedDocument.setContentType(
+		documentDTO.getContentFeatures() != null && documentDTO.getContentFeatures().getContentType() != null
+			? documentDTO.getContentFeatures().getContentType()
+			: matchedDocument.getContentType());
+	matchedDocument
+		.setDescription(documentDTO.getDocumentDescription() != null ? documentDTO.getDocumentDescription()
+			: matchedDocument.getDescription());
+	matchedDocument.setDocumentCode(documentDTO.getDocumentCode() != null ? documentDTO.getDocumentCode()
+		: matchedDocument.getDocumentCode());
+    }
+
+    @Override
+    @Transactional
+    public boolean isExternalDmsIdUnique(String externalDmsId) {
+	return documentRepository.findByDmsIdOrExternalDmsIdAndDocumentStatusNot(externalDmsId, externalDmsId,
+		DMSDocumentStatus.DELETED) == null;
     }
 
 }

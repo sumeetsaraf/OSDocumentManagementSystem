@@ -2,7 +2,7 @@ package com.oneshield.dms.common;
 
 public enum DMSDocumentStatus {
 
-    CREATED("Created", 0), MODIFIED("Modified", 1), DELETED("Deleted", 2), FAILED("Failed", 3), ADDED("Added", 0);
+    CREATED("Created", 0), MODIFIED("Modified", 1), DELETED("Deleted", 2), FAILED("Failed", 3), ADDED("Added", 4), SYNCHED("Synched",5);
 
     // 0-Created + 4-Added:Pessimistic approach for document creation.
     // 1-Modified:Document has been modified

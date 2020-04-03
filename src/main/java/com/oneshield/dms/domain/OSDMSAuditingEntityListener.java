@@ -6,15 +6,16 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
-public class OSDMSAuditingEntityListener
-{
+public class OSDMSAuditingEntityListener {
+    
     @PrePersist
-    @PreUpdate
     @PreRemove
-    private void beforeAnyOperation(Object object)
-    {
-        DMSAuditable objectToAddAudit = (DMSAuditable) object;
-        objectToAddAudit.setCreatedDate(new Date());
-        objectToAddAudit.setLastModifiedDate(new Date());
+    private void prePersist(DMSAuditable auditableObject) {
+	auditableObject.setCreatedDate(new Date());
+    }
+
+    @PreUpdate
+    private void preUpdate(DMSAuditable auditableObject) {
+	auditableObject.setLastModifiedDate(new Date());
     }
 }

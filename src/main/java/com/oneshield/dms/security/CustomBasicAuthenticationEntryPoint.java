@@ -1,11 +1,22 @@
 package com.oneshield.dms.security;
 
-public class CustomBasicAuthenticationEntryPoint //extends BasicAuthenticationEntryPoint 
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint 
 {
 
-    /*@Override
+    @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-	    AuthenticationException authException) throws IOException, ServletException {
+	    AuthenticationException authException) throws IOException {
 	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName() + "");
 
@@ -15,8 +26,8 @@ public class CustomBasicAuthenticationEntryPoint //extends BasicAuthenticationEn
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-	this.setRealmName(SpringSecurityConfig.REALM);
-	super.afterPropertiesSet();
-    }*/
+    public void afterPropertiesSet() {
+	this.setRealmName(OsSpringSecurityConfig.REALM);
+	
+    }
 }

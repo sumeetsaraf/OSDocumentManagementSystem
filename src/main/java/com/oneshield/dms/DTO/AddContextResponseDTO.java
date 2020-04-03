@@ -15,6 +15,7 @@ public class AddContextResponseDTO {
     private DMSResponseActionStatus status;
 
     public List<AddDocumentResponseDTO> getResponseResult() {
+	responseResult.sort((o1, o2)->o2.getCreatedDate().compareTo(o1.getCreatedDate()));
 	return responseResult;
     }
 

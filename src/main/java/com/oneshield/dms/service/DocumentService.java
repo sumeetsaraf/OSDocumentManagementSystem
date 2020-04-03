@@ -15,9 +15,6 @@ public interface DocumentService {
 
     AddContextResponseDTO getContextDmsIdFromMasterContextObjectId(Long masterContextObjectId);
 
-    AddContextResponseDTO getContextDmsIdFromContextObjectIdOrParentContextObjectId(Long associateId,
-	    Long associateParent);
-
     AddContextResponseDTO updateDocumentWithAssocIdAndDmsId(Long assocId, String dmsId,
 	    DocumentContentDTO documentToUpdate);
 
@@ -26,4 +23,8 @@ public interface DocumentService {
     boolean updateDocumentForDmsId(String dmsId, DMSDocumentStatus documentToUpdate);
 
     boolean deleteDocumentByDmsId(String dmsId);
+
+    AddContextResponseDTO updateDocumentsForContextObjectId(AddContextDTO contextObjectWithListOfDocuments);
+
+    boolean isExternalDmsIdUnique(String externalDmsId);
 }

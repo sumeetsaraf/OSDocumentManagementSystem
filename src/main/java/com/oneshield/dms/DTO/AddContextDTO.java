@@ -9,11 +9,12 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.oneshield.dms.validations.UniqueExternalDmsId;
 
 @JsonRootName("context")
+@UniqueExternalDmsId
 public class AddContextDTO {
 
-    @JsonProperty("contextObjectId")
     @NotNull
     @Min(0)
     @Max(9223372036854775806L)
@@ -21,11 +22,13 @@ public class AddContextDTO {
 
     @NotNull
     private String contextObjectType;
-
-    @JsonProperty("parentContextObjectId")
+   
+    @Min(0)
+    @Max(9223372036854775806L)
     private Long parentContextObjectId;
 
-    @JsonProperty("masterContextObjectId")
+    @Min(0)
+    @Max(9223372036854775806L)
     private Long masterContextObjectId;
 
     @JsonProperty("documentContent")
@@ -52,14 +55,14 @@ public class AddContextDTO {
 	this.contextObjectType = contextObjectType;
     }
 
-    public List<DocumentContentDTO> getDocumentContent() {
+    public List<DocumentContentDTO> getListOfDocuments() {
 	if (listOfDocuments == null) {
 	    listOfDocuments = new ArrayList<>();
 	}
 	return listOfDocuments;
     }
 
-    public void setDocumentContent(List<DocumentContentDTO> documentcontent) {
+    public void setListOfDocuments(List<DocumentContentDTO> documentcontent) {
 	this.listOfDocuments = documentcontent;
     }
 

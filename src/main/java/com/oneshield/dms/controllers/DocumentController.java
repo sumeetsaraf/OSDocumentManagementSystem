@@ -6,7 +6,7 @@ import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +24,6 @@ import com.oneshield.dms.common.DMSResponseActionStatus;
 import com.oneshield.dms.service.DocumentService;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api")
 public class DocumentController {
 
@@ -78,9 +77,24 @@ public class DocumentController {
 		return ResponseEntity.notFound().build();
 	    }
 	    AddDocumentResponseDTO documentResponse = responseDto.getResponseResult().stream().findFirst().get();
+	    if (documentResponse.getDocumentContent() == null) {
+		return ResponseEntity.notFound().build();
+	    }
 	    String tikaDetection = tika.detect(documentResponse.getDocumentContent());
-	    return ResponseEntity.status(HttpStatus.OK).header("Content-Disposition", "inline")
-		    .header("Content-Type", tikaDetection).body(documentResponse.getDocumentContent());
+	    if(tikaDetection.equalsIgnoreCase("application/pdf"))
+        {
+        return ResponseEntity.status(HttpStatus.OK).header("Content-Disposition", "inline")
+            .header("Content-Type", tikaDetection).body(documentResponse.getDocumentContent());
+        }
+        else
+        {
+            return ResponseEntity.status(HttpStatus.OK).header("Content-Disposition", "inline; filename="+documentResponse.getFileName()+";")
+            .header("Content-Type", tikaDetection).body(documentResponse.getDocumentContent());  
+        }
+	   /* return ResponseEntity.status(HttpStatus.OK).header("Content-Disposition", "inline;")
+		    .header("Content-Type", tikaDetection)
+		    // .header("x-frame-options", "ALLOW-FROM")
+		    .body(documentResponse.getDocumentContent());*/
 	} else {
 	    return ResponseEntity.notFound().build();
 	}
@@ -115,5 +129,17 @@ public class DocumentController {
     public ResponseEntity<?> dummy() {
 	DMSDocumentStatus dto = DMSDocumentStatus.FAILED;
 	return ResponseEntity.ok().body(dto);
+    }
+    
+    @PostMapping("/syncDocuments")
+    public ResponseEntity<?> updateDocumentWithStatus(@RequestBody AddContextDTO contextObjectWithListOfDocuments) throws Exception {
+	long emptyExternalDmsId = contextObjectWithListOfDocuments.getListOfDocuments().parallelStream().filter(
+		documentDTO -> documentDTO.getExternalDmsId() == null || documentDTO.getExternalDmsId().isEmpty())
+		.count();
+	if (emptyExternalDmsId > 0) {
+	    throw new HttpMessageNotReadableException("ExternalDmsId must not be null");
+	}
+	return ResponseEntity.ok()
+		.body(documentService.updateDocumentsForContextObjectId(contextObjectWithListOfDocuments));
     }
 }

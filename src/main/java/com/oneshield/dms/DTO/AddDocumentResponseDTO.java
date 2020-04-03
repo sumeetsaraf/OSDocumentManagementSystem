@@ -23,18 +23,74 @@ public class AddDocumentResponseDTO {
     private Long contentSize;
     @JsonProperty("contextObjectId")
     private Long contextContextObjectId;
-    
+
     @JsonProperty("contextObjectType")
     private String contextContextObjectType;
-    
+
     @JsonProperty("parentContextObjectId")
     private Long contextParentContextObjectId;
-    
+
     @JsonProperty("masterContextObjectId")
     private Long contextMasterContextObjectId;
 
     @JsonInclude(Include.NON_NULL)
     private byte[] documentContent;
+
+    private String documentCode;
+    private String renderingTemplate;
+    private String renderingType;
+    private String attachmentType;
+    private Long versionId;
+    private Long renderingTemplateId;
+    private String documentGenerationType;
+    
+    public String getDocumentCode() {
+        return documentCode;
+    }
+
+    public void setDocumentCode(String documentCode) {
+        this.documentCode = documentCode;
+    }
+
+    public String getRenderingTemplate() {
+        return renderingTemplate;
+    }
+
+    public void setRenderingTemplate(String renderingTemplate) {
+        this.renderingTemplate = renderingTemplate;
+    }
+
+    public String getRenderingType() {
+        return renderingType;
+    }
+
+    public void setRenderingType(String renderingType) {
+        this.renderingType = renderingType;
+    }
+
+    public String getAttachmentType() {
+        return attachmentType;
+    }
+
+    public void setAttachmentType(String attachmentType) {
+        this.attachmentType = attachmentType;
+    }
+
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+    }
+
+    public Long getRenderingTemplateId() {
+        return renderingTemplateId;
+    }
+
+    public void setRenderingTemplateId(Long renderingTemplateId) {
+        this.renderingTemplateId = renderingTemplateId;
+    }
 
     public String getDmsId() {
 	return dmsId;
@@ -164,5 +220,13 @@ public class AddDocumentResponseDTO {
 
     public void setContextMasterContextObjectId(Long contextMasterContextObjectId) {
 	this.contextMasterContextObjectId = contextMasterContextObjectId;
+    }
+
+    public String getDocumentGenerationType() {
+	return documentGenerationType;
+    }
+
+    public void setDocumentGenerationType(String documentGenerationType) {
+	this.documentGenerationType = documentGenerationType;
     }
 }

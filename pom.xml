@@ -19,6 +19,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<spring.version>4.3.10.RELEASE</spring.version>
+		
 	</properties>
 
 	<dependencies>
@@ -98,6 +99,13 @@
 			<artifactId>tika-core</artifactId>
 			<version>1.23</version>
 		</dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+        <version>2.2.4.RELEASE</version>
+</dependency>
+
 
 	</dependencies>
 	<profiles>

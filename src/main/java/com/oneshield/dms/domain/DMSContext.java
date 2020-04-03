@@ -32,7 +32,7 @@ public class DMSContext implements Comparable<DMSContext> {
 
     private Long masterContextObjectId;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "context", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "context", fetch = FetchType.EAGER)
     private Set<DMSDocument> setOfDocuments;
 
     public Long getId() {

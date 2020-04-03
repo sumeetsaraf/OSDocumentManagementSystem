@@ -11,6 +11,7 @@ public class DMSSystemParameters
 // to one field using DataSizeUnit class
     private boolean optimisticMode;
     private int maximumDocumentContentSizeInMB;
+    private boolean persistError;
 
     public DMSSystemParameters() {
     }
@@ -26,10 +27,20 @@ public class DMSSystemParameters
         this.optimisticMode = optimisticMode;
     }
 
-    public void setMaximumDocumentContentSizeInMB(
-                                                  int maximumDocumentContentSizeInMB)
+    public void setMaximumDocumentContentSizeInMB(int maximumDocumentContentSizeInMB)
     {
         this.maximumDocumentContentSizeInMB = maximumDocumentContentSizeInMB;
+    }
+
+    public boolean isPersistError()
+    {
+        return persistError;
+    }
+
+    public void setPersistError(
+                                boolean persistError)
+    {
+        this.persistError = persistError;
     }
 
 }

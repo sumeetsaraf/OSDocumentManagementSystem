@@ -28,7 +28,7 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable, 
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DMS_DOCUMENT_SEQ")
-    @SequenceGenerator(name = "DMS_DOCUMENT_SEQ", sequenceName = "DMS_DOCUMENT_SEQ")
+    @SequenceGenerator(name = "DMS_DOCUMENT_SEQ", sequenceName = "DMS_DOCUMENT_SEQ", allocationSize = 1)
     private Long id;
 
     @ManyToOne
@@ -49,12 +49,25 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable, 
 
     private DMSDocumentStatus documentStatus;
 
+    private String documentCode;
+    private String renderingTemplate;
+    private String renderingType;
+    private String attachmentType;
+    private Long versionId;
+    private Long renderingTemplateId;
+    
+    @Column(columnDefinition = "char default 'M'",nullable = false)
+    private String documentGenerationType;
+
     @PrePersist
     public void beforePersist() {
 	if (dmsId == null) {
 	    this.setDmsId(DMSHelper.getEscapaedTimeForCurrentTimestamp());
 	}
 	this.updateDocumentSizeBasedOnContent();
+	if (this.getExternalDmsId() == null) {
+	    this.setExternalDmsId(this.getDmsId());
+	}
     }
 
     @PreUpdate
@@ -68,10 +81,6 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable, 
 
     public void setDocumentContent(DMSDocumentContent documentContent) {
 	this.documentContent = documentContent;
-    }
-
-    public void setDocumentId(Long documentId) {
-	this.setId(documentId);
     }
 
     public DMSDocument() {
@@ -94,10 +103,6 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable, 
 
     public Long getId() {
 	return id;
-    }
-
-    public void setId(Long id) {
-	this.id = id;
     }
 
     public DMSContext getContext() {
@@ -148,6 +153,62 @@ public class DMSDocument extends DMSDocumentBasicFeatures implements Cloneable, 
 
     public void setDmsId(String dmsId) {
 	this.dmsId = dmsId;
+    }
+
+    public String getDocumentCode() {
+	return documentCode;
+    }
+
+    public void setDocumentCode(String documentCode) {
+	this.documentCode = documentCode;
+    }
+
+    public String getRenderingTemplate() {
+	return renderingTemplate;
+    }
+
+    public void setRenderingTemplate(String renderingTemplate) {
+	this.renderingTemplate = renderingTemplate;
+    }
+
+    public String getRenderingType() {
+	return renderingType;
+    }
+
+    public void setRenderingType(String renderingType) {
+	this.renderingType = renderingType;
+    }
+
+    public String getAttachmentType() {
+	return attachmentType;
+    }
+
+    public void setAttachmentType(String attachmentType) {
+	this.attachmentType = attachmentType;
+    }
+
+    public Long getVersionId() {
+	return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+	this.versionId = versionId;
+    }
+
+    public Long getRenderingTemplateId() {
+	return renderingTemplateId;
+    }
+
+    public void setRenderingTemplateId(Long renderingTemplateId) {
+	this.renderingTemplateId = renderingTemplateId;
+    }
+
+    public String getDocumentGenerationType() {
+	return documentGenerationType;
+    }
+
+    public void setDocumentGenerationType(String documentGenerationType) {
+	this.documentGenerationType = documentGenerationType;
     }
 
 }

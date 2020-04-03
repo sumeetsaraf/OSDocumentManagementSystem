@@ -21,7 +21,7 @@ public class DMSDocumentContent extends DMSAuditable implements Cloneable {
     @Id
     // @Column(name = "DOCUMENT_CONTENT_ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DMS_DOCUMENT_CONTENT_SEQ")
-    @SequenceGenerator(name = "DMS_DOCUMENT_CONTENT_SEQ", sequenceName = "DMS_DOCUMENT_CONTENT_SEQ")
+    @SequenceGenerator(name = "DMS_DOCUMENT_CONTENT_SEQ", sequenceName = "DMS_DOCUMENT_CONTENT_SEQ", allocationSize = 1)
     private Long id;
 
     @Lob
@@ -44,16 +44,16 @@ public class DMSDocumentContent extends DMSAuditable implements Cloneable {
 	return id;
     }
 
-    public void setDocumentContentId(Long documentContentId) {
-	this.id = documentContentId;
-    }
-
     public byte[] getDocumentContent() {
 	return documentContentLob;
     }
 
     public void setDocumentContent(byte[] documentContent) {
 	this.documentContentLob = documentContent;
+    }
+
+    public Long getId() {
+        return id;
     }
 
 }
